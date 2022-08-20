@@ -17,7 +17,6 @@ python-dotenv = "*"
 PyYAML = "*"
 starlette = "*"
 uvicorn = "*"
-uvloop = "*"
 watchgod = "*"
 websockets = "*"
 

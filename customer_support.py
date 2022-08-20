@@ -1,6 +1,8 @@
 from enum import Enum, auto
-from communication_manager import CommunicationManager
 from ai_manager import AIManager
+import asyncio
+import websockets
+import json
 
 
 class Action(Enum):
@@ -17,31 +19,28 @@ action_commands = {
 
 
 class CustomerSupportChat:
-    def __init__(self, name: str, comm_manager: CommunicationManager, ai_manager: AIManager) -> None:
+    def __init__(self, name: str, ai_manager: AIManager) -> None:
         self.name = name
-        self._comm_manager = comm_manager
         self._ai_manager = ai_manager
 
-    def run(self):
-        while True:
-            print("Waiting for message...")
-            sender, msg = comm_manager.receive_message()
-
-            self.display_message(sender, msg)
-            answers = self._ai_manager.answer_message(msg)
-
-            self.display_answers(answers)
-
+    async def run(self):
+        async with websockets.connect('ws://127.0.0.1:8003') as ws:
             while True:
-                select_index = self.choose_message(answers)
-                action = self.choose_action()
-                terminate = self.handle_action(answers, select_index, action)
-                if terminate:
-                    break
+                msg = await ws.recv()
+                data = json.loads(msg)
+                sender, msg = data['sender'], data['message']
 
+                self.display_message(sender, msg)
+                answers = self._ai_manager.answer_message(msg)
 
-    def send_message(self, msg: str) -> None:
-        self._comm_manager.send_message(self.name, msg)
+                self.display_answers(answers)
+
+                while True:
+                    select_index = self.choose_message(answers)
+                    action = self.choose_action()
+                    terminate = await self.handle_action(answers, select_index, action, ws)
+                    if terminate:
+                        break
 
     def display_message(self, sender, msg: str) -> None:
         print(f"{sender}: {msg}")
@@ -67,7 +66,7 @@ class CustomerSupportChat:
         action = input().strip().lower()
         return action_commands[action]
 
-    def handle_action(self, msgs: str, index: int, action: Action) -> bool:
+    async def handle_action(self, msgs: str, index: int, action: Action, ws) -> bool:
         match action:
             case Action.Edit:
                 print(f"Editing ({msgs[index]}): ", end='')
@@ -78,7 +77,7 @@ class CustomerSupportChat:
                 return False
 
             case Action.Send:
-                self.send_message(msgs[index])
+                await ws.send(json.dumps({'sender': 'Customer Support', 'message': msgs[index]}))
                 return True
 
             case Action.Unselect:
@@ -86,7 +85,6 @@ class CustomerSupportChat:
 
 
 if __name__ == "__main__":
-    comm_manager = CommunicationManager()
     ai_manager = AIManager()
-    c = CustomerSupportChat("Customer Support", comm_manager, ai_manager)
+    c = CustomerSupportChat("Customer Support", ai_manager)
     c.run()
