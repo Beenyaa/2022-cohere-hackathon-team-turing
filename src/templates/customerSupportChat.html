@@ -3,11 +3,8 @@
   {% include 'components/head.html' %}
   <script>
     $(document).ready(function () {
-      var current_user;
-      $.get("/api/current_user", function (response) {
-        current_user = response;
-        $("#profile").text(current_user);
-      });
+      document.cookie = "X-Authorization=Customer Support; path=/;";
+      var current_user = 'Customer Support';
       var receiver = "";
       // create websocket
       var socket = new WebSocket("ws://127.0.0.1:8000/api/chat");

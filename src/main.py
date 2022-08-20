@@ -24,9 +24,14 @@ def get_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/chat")
-def get_chat(request: Request):
-    return templates.TemplateResponse("chat.html", {"request": request})
+@app.get("/customer-chat")
+def get_customerChat(request: Request):
+    return templates.TemplateResponse("customerChat.html", {"request": request})
+
+@app.get("/customer-support")
+def get_customerSupportChat(request: Request):
+    return templates.TemplateResponse("customerSupportChat.html", {"request": request})
+
 
 
 @app.get("/api/current_user")
@@ -41,10 +46,10 @@ class RegisterValidator(BaseModel):
         orm_mode = True
 
 
-@app.post("/api/register")
-def register_user(user: RegisterValidator, response: Response):
-    response.set_cookie(key="X-Authorization",
-                        value=user.username, httponly=True)
+# @app.post("/api/register")
+# def register_user(user: RegisterValidator, response: Response):
+#     response.set_cookie(key="X-Authorization",
+#                         value=user.username, httponly=True)
 
 
 class SocketManager:
