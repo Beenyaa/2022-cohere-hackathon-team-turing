@@ -8,7 +8,7 @@ async def echo(ws):
 
 async def main():
     print("ABC")
-    async with websockets.serve(echo, "localhost", 8003):
+    async with websockets.serve(echo, "localhost", 8000):
         print("KAH")
         await asyncio.Future()  # run forever
 

@@ -24,7 +24,7 @@ class CustomerSupportChat:
         self._ai_manager = ai_manager
 
     async def run(self):
-        async with websockets.connect('ws://127.0.0.1:8003') as ws:
+        async with websockets.connect('ws://127.0.0.1:8000') as ws:
             while True:
                 msg = await ws.recv()
                 data = json.loads(msg)
