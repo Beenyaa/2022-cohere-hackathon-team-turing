@@ -14,6 +14,11 @@ class CustomerSupportChat:
     def recieve_message(self, sender, msg: str) -> None:
         print(f"{sender}: {msg}")
 
+    def receive_choices(self, sender, msgs: list[str]) -> None:
+        print(f"{sender}:")
+        for i, m in enumerate(msgs):
+            print(f"\t{i+1}: {m}")
+
 
 
 if __name__ == "__main__":
@@ -23,3 +28,5 @@ if __name__ == "__main__":
     sender, msg = comm_manager.receive_message()
     c.recieve_message(sender, msg)
 
+    sender, msgs = comm_manager.receive_messages()
+    c.receive_choices(sender, msgs)
