@@ -49,10 +49,14 @@ class CustomerSupportChat:
         action = input().strip().lower()
         return action_commands[action]
 
-    def handle_action(self, msg: str, action: Action):
+    def handle_action(self, msgs: str, index: int, action: Action):
         match action:
             case Action.Edit:
-                raise NotImplementedError
+                print(f"Editing ({msgs[msg_index]}): ", end='')
+                new_msg = input()
+                msgs[msg_index] = new_msg
+                for i, m in enumerate(msgs):
+                    print(f"\t{i+1}: {m}")
 
             case Action.Send:
                 print("SENDING")
@@ -77,4 +81,4 @@ if __name__ == "__main__":
     print(msgs[msg_index])
 
     action = c.choose_action()
-    c.handle_action(msgs[msg_index], action)
+    c.handle_action(msgs, msg_index, action)
