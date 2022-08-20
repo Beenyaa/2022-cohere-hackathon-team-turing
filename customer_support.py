@@ -19,6 +19,16 @@ class CustomerSupportChat:
         for i, m in enumerate(msgs):
             print(f"\t{i+1}: {m}")
 
+    def select_choice(self, msgs: list[str]) -> int:
+        index = input()
+        if not index.isdigit():
+            raise ValueError(f"Could not find message with id: '{index}'")
+
+        index = int(index)
+        if not 0 < index <= len(msgs):
+            raise ValueError(f"Could not find message number: '{index}'")
+
+        return index-1
 
 
 if __name__ == "__main__":
@@ -30,3 +40,8 @@ if __name__ == "__main__":
 
     sender, msgs = comm_manager.receive_messages()
     c.receive_choices(sender, msgs)
+
+    msg_index = c.select_choice(msgs)
+    print(msg)
+
+    
