@@ -19,6 +19,7 @@ starlette = "*"
 uvicorn = "*"
 watchgod = "*"
 websockets = "*"
+certifi = "*"
 
 [dev-packages]
 autopep8 = "*"

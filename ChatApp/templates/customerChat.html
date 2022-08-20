@@ -3,8 +3,11 @@
   {% include 'components/head.html' %}
   <script>
     $(document).ready(function () {
-      document.cookie = "X-Authorization=Customer Support; path=/;";
-      var current_user = 'Customer Support';
+      var current_user;
+      $.get("/api/current_user", function (response) {
+        current_user = response;
+        $("#profile").text(current_user);
+      });
       var receiver = "";
       // create websocket
       var socket = new WebSocket("ws://127.0.0.1:8000/api/chat");
@@ -17,21 +20,21 @@
         var content =
           "<p><strong>" +
           sender +
-          " </strong> <span> " +
+          ": </strong> <span> " +
           message +
           "</span></p>";
         parent.append(content);
       };
       $("#chat-form").on("submit", function (e) {
         e.preventDefault();
-        var message = $("input").val();
+        var message = $("textarea").val();
         if (message) {
           data = {
             sender: current_user,
             message: message,
           };
           socket.send(JSON.stringify(data));
-          $("input").val("");
+          $("textarea").val("");
           document.cookie = "X-Authorization=; path=/;";
         }
       });
@@ -39,17 +42,17 @@
   </script>
   <body>
     <div class="chat-body card">
-      <div class="card-body">
+      <div class="card-body h-100">
         <strong id="profile"></strong>
-        <h4 class="card-title text-center">Chat App</h4>
+        <h4 class="card-title text-center">Customer's Chat View</h4>
         <hr />
         <div id="messages"></div>
-        <form class="form-floating" id="chat-form">
-          <input
+        <form class="form-floating w-100 align-items-center" id="chat-form">
+          <textarea
             type="text"
             class="form-control"
             placeholder="Write your message"
-          />
+          ></textarea>
           <button id="send" type="submit" class="btn btn-primary">Send</button>
         </form>
       </div>
