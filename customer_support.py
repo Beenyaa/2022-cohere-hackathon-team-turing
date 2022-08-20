@@ -1,4 +1,18 @@
+from enum import Enum, auto
 from communication_manager import CommunicationManager
+
+
+class Action(Enum):
+    Edit = auto()
+    Send = auto()
+    Unselect = auto()
+
+
+action_commands = {
+    "edit": Action.Edit,
+    "send": Action.Send,
+    "unselect": Action.Unselect
+}
 
 
 class CustomerSupportChat:
@@ -30,18 +44,37 @@ class CustomerSupportChat:
 
         return index-1
 
+    def choose_action(self) -> Action:
+        print(f"Choose action: {', '.join(action_commands.keys())}")
+        action = input().strip().lower()
+        return action_commands[action]
+
+    def handle_action(self, msg: str, action: Action):
+        match action:
+            case Action.Edit:
+                raise NotImplementedError
+
+            case Action.Send:
+                print("SENDING")
+                raise NotImplementedError
+
+            case Action.Unselect:
+                print("UNSELECT")
+                raise NotImplementedError
+
 
 if __name__ == "__main__":
     comm_manager = CommunicationManager()
     c = CustomerSupportChat("Customer Support", comm_manager)
     c.send_message("Hello")
-    sender, msg = comm_manager.receive_message()
-    c.recieve_message(sender, msg)
+    #sender, msg = comm_manager.receive_message()
+    #c.recieve_message(sender, msg)
 
     sender, msgs = comm_manager.receive_messages()
     c.receive_choices(sender, msgs)
 
     msg_index = c.select_choice(msgs)
-    print(msg)
+    print(msgs[msg_index])
 
-    
+    action = c.choose_action()
+    c.handle_action(msgs[msg_index], action)
