@@ -16,11 +16,27 @@ action_commands = {
 
 
 class CustomerSupportChat:
-    ...
-
     def __init__(self, name: str, comm_manager: CommunicationManager) -> None:
         self.name = name
         self._comm_manager = comm_manager
+
+    def run(self):
+        while True:
+            print("Waiting for message...")
+            msg_type, sender, msg = comm_manager.receive_message()
+
+            if msg_type == 'message':
+                self.recieve_message(sender, msg)
+                self.send_message(input(f"{self.name}: "))
+            
+            elif msg_type == 'choices':
+                self.receive_choices(sender, msg)
+                msg_index = c.select_choice(msg)
+                action = self.choose_action()
+                c.handle_action(msg, msg_index, action)
+
+
+
 
     def send_message(self, msg: str) -> None:
         self._comm_manager.send_message(self.name, msg)
@@ -52,9 +68,9 @@ class CustomerSupportChat:
     def handle_action(self, msgs: str, index: int, action: Action):
         match action:
             case Action.Edit:
-                print(f"Editing ({msgs[msg_index]}): ", end='')
+                print(f"Editing ({msgs[index]}): ", end='')
                 new_msg = input()
-                msgs[msg_index] = new_msg
+                msgs[index] = new_msg
                 for i, m in enumerate(msgs):
                     print(f"\t{i+1}: {m}")
 
@@ -70,6 +86,7 @@ class CustomerSupportChat:
 if __name__ == "__main__":
     comm_manager = CommunicationManager()
     c = CustomerSupportChat("Customer Support", comm_manager)
+    """
     c.send_message("Hello")
     #sender, msg = comm_manager.receive_message()
     #c.recieve_message(sender, msg)
@@ -82,3 +99,5 @@ if __name__ == "__main__":
 
     action = c.choose_action()
     c.handle_action(msgs, msg_index, action)
+    """
+    c.run()
