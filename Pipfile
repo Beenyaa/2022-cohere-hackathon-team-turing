@@ -5,6 +5,21 @@ name = "pypi"
 
 [packages]
 cohere = "*"
+sqlalchemy = "*"
+click = "*"
+fastapi = "*"
+h11 = "*"
+httptools = "*"
+Jinja2 = "*"
+MarkupSafe = "*"
+pydantic = "*"
+python-dotenv = "*"
+PyYAML = "*"
+starlette = "*"
+uvicorn = "*"
+uvloop = "*"
+watchgod = "*"
+websockets = "*"
 
 [dev-packages]
 autopep8 = "*"

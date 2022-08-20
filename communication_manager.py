@@ -7,5 +7,4 @@ class CommunicationManager:
         data = raw_data.split(' ')
         if len(data) < 2:
             raise ValueError(f"Failed to parse sender and message from {raw_data}")
-
         return data[0], ' '.join(data[1:])

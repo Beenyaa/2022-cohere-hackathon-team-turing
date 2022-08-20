@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'components/head.html' %}
+  <script>
+    $(document).ready(function () {
+      $("#user-form").on("submit", function (e) {
+        e.preventDefault();
+        var current_user = $("#user_input").val();
+        if (current_user) {
+          data = { username: current_user };
+          $.post("/api/register", JSON.stringify(data), function (response) {
+            $(".chat-body").removeClass("hide");
+            $(".chat-register").addClass("hide");
+            window.location.href = "/chat";
+          });
+        }
+      });
+    });
+  </script>
+  <body>
+    <div class="chat-body card">
+      <div class="card-body">
+        <h4 class="card-title text-center">Chat App</h4>
+        <hr />
+        <form class="form-inline" id="user-form">
+          <div class="row">
+            <div class="col-8">
+              <input
+                type="text"
+                class="form-control"
+                id="user_input"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div class="col-4">
+              <button id="start" type="submit" class="btn btn-primary">
+                Start Chat
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
