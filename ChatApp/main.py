@@ -1,4 +1,5 @@
 import json
+from re import M
 from fastapi import (
     FastAPI, WebSocket, WebSocketDisconnect, Request, Response
 )
@@ -78,10 +79,22 @@ async def handleCustomerSupport(data):
 
 async def handleCustomer(data):
     await manager.broadcast(data)
-    data = ai_manager.answer_message(data['message'])
-    print(data)
 
-    
+    df = ai_manager.answer_message(data['message'])
+    msgs = []
+
+    questions = df['question'].to_list()
+    distances = df['distance'].to_list()
+
+    for q, d in zip(questions, distances):
+        msgs.append({'question': q, 'distance': d})
+
+    data = {
+        'sender': 'Customer',
+        'type': 'multichoice',
+        'messages': msgs
+    }
+    await manager.broadcast(data)
 
 
 async def handleCustomerSupportBot(data):
