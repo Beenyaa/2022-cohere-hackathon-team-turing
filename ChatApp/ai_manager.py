@@ -35,7 +35,10 @@ class AIManager:
             self.kb = pd.concat([self.kb, df], axis=0).reset_index(drop=True) 
 
     def answer_message(self, msg: str, n_top: int = 3) -> list[str]:
-        return self.query_using_semantic_search(msg)
+        kb_df = self.query_using_semantic_search(msg)
+        gen = self.generate_using_dialog(msg)
+        result_df = kb_df.append(pd.DataFrame.from_dict({'question': [gen], "distance": [1]}), ignore_index=True)
+        return result_df.sort_values("distance")
 
     def create_products(self):
         product = namedtuple('product', ['name', 'prompt'])
@@ -84,38 +87,38 @@ class AIManager:
                                 model='large',
                                 truncate='LEFT').embeddings
         similar_item_ids = search_index.get_nns_by_vector(query_embed[0],
-                                                            3,
+                                                            2,
                                                             include_distances=True)
         return pd.DataFrame({'question': df.loc[similar_item_ids[0], 'question'],
                             'distance': similar_item_ids[1]}) 
 
     def generate_using_dialog(self, dialog):
-        """
-        dialog should be formatted as such: 
-        "Customer: Msg1\nAgent: Response1\n--\nCustomer: Msg2\nAgent: Response2\n--\nCustomer: Msg3"
-        """
+        promt_text = f"""You are a customer support agent responding to a customer.
+--
+Customer: Hello.
+Agent: Hello, what can I help you with today?
+--
+Customer: {dialog}
+Agent:"""
+
         response = self.co.generate(
             model='xlarge',
-            prompt=f'You are a customer support agent responding to a customer.\n--\n{dialog}\nAgent: ',
+            prompt=promt_text,
             max_tokens=15,
             temperature=0.3,
             k=0,
-            p=1,
+            p=0.75,
             frequency_penalty=0,
             presence_penalty=0,
             stop_sequences=["--"],
             return_likelihoods='NONE')
-
-        return  response.generations[0].text
+        return  response.generations[0].text.split("--")[0].strip()
 
 
 
 if __name__ == "__main__":
-    API_KEY = 'xxxxxxxxxxxxxxxxxx'
+    API_KEY = 'bULA1eGPpCKwDioqSK49DrepiSSHuvRQ8gTwKjAs'
     aiManager = AIManager(API_KEY)
     msg = 'What is the height at the back in cm for the Halls Standard Cold Frame'
     response = aiManager.answer_message(msg)
-    print(response)
-    dialog = "Customer: Hello\nAgent: What can I help you with today?\n--\nCustomer: How is work?"
-    response = aiManager.generate_using_dialog(dialog)
     print(response)
