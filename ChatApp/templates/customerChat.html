@@ -3,19 +3,15 @@
   {% include 'components/head.html' %}
   <script>
     $(document).ready(function () {
-      var current_user;
-      $.get("/api/current_user", function (response) {
-        current_user = response;
-        $("#profile").text(current_user);
-      });
+      var current_user = 'Customer'
       var receiver = "";
       // create websocket
-      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer");
+      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer ");
       socket.onmessage = function (event) {
         var parent = $("#messages");
         var data = JSON.parse(event.data);
         var sender = data["sender"];
-        if (sender == current_user) sender = "You";
+        if (sender === current_user) sender = "You";
         var message = data["message"];
         var content =
           "<p><strong>" +

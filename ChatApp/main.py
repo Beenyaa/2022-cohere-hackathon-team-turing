@@ -1,3 +1,4 @@
+import json
 from fastapi import (
     FastAPI, WebSocket, WebSocketDisconnect, Request, Response
 )
@@ -18,7 +19,6 @@ app.mount(
 # locate templates
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
 
-
 @app.get("/")
 def get_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
@@ -28,15 +28,10 @@ def get_home(request: Request):
 def get_customerChat(request: Request):
     return templates.TemplateResponse("customerChat.html", {"request": request})
 
+
 @app.get("/customer-support")
 def get_customerSupportChat(request: Request):
     return templates.TemplateResponse("customerSupportChat.html", {"request": request})
-
-
-
-# @app.get("/api/current_user")
-# def get_user(request: Request):
-#     # return request.cookies.get("X-Authorization")
 
 
 class RegisterValidator(BaseModel):
@@ -44,12 +39,6 @@ class RegisterValidator(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-# @app.post("/api/register")
-# def register_user(user: RegisterValidator, response: Response):
-#     response.set_cookie(key="X-Authorization",
-#                         value=user.username, httponly=True)
 
 
 class SocketManager:
@@ -68,24 +57,48 @@ class SocketManager:
             await connection[0].send_json(data)
 
 
-
 manager = SocketManager()
+
+def postMessage(msg):
+    ...
+
+templates.env.globals.update(postMessage=postMessage)
+
+async def handleCustomerSupport(data):
+    await manager.broadcast(data)
+
+
+async def handleCustomer(data):
+    await manager.broadcast(data)
+
+
+async def handleCustomerSupportBot(data):
+    await manager.broadcast(data)
 
 
 @app.websocket("/api/chat/{sender}")
 async def chat(websocket: WebSocket, sender):
-    # sender = websocket.cookies.get("X-Authorization")
     if sender:
         await manager.connect(websocket, sender)
         response = {
             "sender": sender,
             "message": "got connected"
         }
-        await manager.broadcast(response)
         try:
+            await manager.broadcast(response)
             while True:
                 data = await websocket.receive_json()
-                await manager.broadcast(data)
+
+                match sender:
+                    case "Customer Support":
+                        await handleCustomerSupport(data)
+
+                    case "Customer":
+                        await handleCustomer(data)
+
+                    case "Customer Support Bot":
+                        await handleCustomerSupportBot(data)
+
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
             response['message'] = "left"

@@ -6,12 +6,12 @@
       var current_user = 'Customer Support';
       var receiver = "";
       // create websocket
-      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer Support Chat");
+      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer Support");
       socket.onmessage = function (event) {
         var parent = $("#messages");
         var data = JSON.parse(event.data);
         var sender = data["sender"];
-        if (sender == current_user) sender = "You";
+        if (sender === current_user) sender = "You";
         var message = data["message"];
         var content =
           "<p><strong>" +

@@ -2,11 +2,7 @@ from enum import Enum, auto
 from ai_manager import AIManager
 import asyncio
 import websockets
-from fastapi import WebSocket
 import json
-
-from ChatApp.main import SocketManager
-
 
 class Action(Enum):
     Edit = auto()
