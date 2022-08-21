@@ -2,7 +2,10 @@ from enum import Enum, auto
 from ai_manager import AIManager
 import asyncio
 import websockets
+from fastapi import WebSocket
 import json
+
+from ChatApp.main import SocketManager
 
 
 class Action(Enum):
@@ -24,7 +27,7 @@ class CustomerSupportChat:
         self._ai_manager = ai_manager
 
     async def run(self):
-        async with websockets.connect('wss://127.0.0.1:8000') as ws:
+        async with websockets.connect('ws://127.0.0.1:8000/api/chat/Customer-Support-Helper-Bot') as ws:
             while True:
                 msg = await ws.recv()
                 data = json.loads(msg)

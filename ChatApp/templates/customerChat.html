@@ -10,7 +10,7 @@
       });
       var receiver = "";
       // create websocket
-      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat");
+      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer");
       socket.onmessage = function (event) {
         var parent = $("#messages");
         var data = JSON.parse(event.data);
@@ -35,7 +35,6 @@
           };
           socket.send(JSON.stringify(data));
           $("textarea").val("");
-          document.cookie = "X-Authorization=; path=/;";
         }
       });
     });

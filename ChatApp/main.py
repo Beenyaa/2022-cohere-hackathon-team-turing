@@ -34,9 +34,9 @@ def get_customerSupportChat(request: Request):
 
 
 
-@app.get("/api/current_user")
-def get_user(request: Request):
-    return request.cookies.get("X-Authorization")
+# @app.get("/api/current_user")
+# def get_user(request: Request):
+#     # return request.cookies.get("X-Authorization")
 
 
 class RegisterValidator(BaseModel):
@@ -68,12 +68,13 @@ class SocketManager:
             await connection[0].send_json(data)
 
 
+
 manager = SocketManager()
 
 
-@app.websocket("/api/chat")
-async def chat(websocket: WebSocket):
-    sender = websocket.cookies.get("X-Authorization")
+@app.websocket("/api/chat/{sender}")
+async def chat(websocket: WebSocket, sender):
+    # sender = websocket.cookies.get("X-Authorization")
     if sender:
         await manager.connect(websocket, sender)
         response = {
