@@ -33,6 +33,10 @@
       document.getElementById('multichoice-panel').classList.add('visually-hidden');
     }
 
+    function closeEdit() {
+      document.getElementById('multichoice-panel').classList.add('visually-hidden');
+    }
+
     document.getElementById("edit-button-0").addEventListener('click', event => {
       editAnswer(0);
     });
@@ -51,6 +55,9 @@
     document.getElementById("send-button-2").addEventListener('click', event => {
       sendAnswer(2);
     });
+    document.getElementById("edit-button-close").addEventListener('click', event => {
+      closeEdit();
+    });
 
     var current_user = 'Customer Support';
     var receiver = "";
@@ -62,24 +69,32 @@
       var data = JSON.parse(event.data);
       var sender = data["sender"];
       if (sender === current_user) sender = "You";
-      console.log(data);
       var content =
         "<p><strong>" +
         sender +
         ": </strong> <span> " +
         data['message'] +
         "</span></p>";
-      parent.append(content);
 
       let message = undefined;
       if (data['type'] === 'multichoice') {
         const panel = document.getElementById('multichoice-panel');
+
+        const questions = [
+          data['messages'][0]['question'],
+          data['messages'][1]['question'],
+          data['messages'][2]['question']
+        ];
+
+        for (let i = 0; i < 3; i++)
+          document.getElementById(answerText[i]).textContent = questions[i];
+
         panel.classList.remove('visually-hidden');
       }
       else {
         message = data["message"];
+        parent.append(content);
       }
-
     };
     $("#chat-form").on("submit", function (e) {
       e.preventDefault();
@@ -105,7 +120,12 @@
       <div id="messages"></div>
       <div id="multichoice-panel" class="visually-hidden">
         <div style='background-color: #FFD; margin-bottom: 5px'>
-          <button id="edit-button-0"">
+          <button id="edit-button-close">
+            <span class="material-symbols-outlined" class="send-buttons">close</span>
+          </button>
+        </div>
+        <div style='background-color: #FFD; margin-bottom: 5px'>
+          <button id="edit-button-0">
             <span class="material-symbols-outlined" class="send-buttons">edit</span>
           </button>
           <button id="send-button-0">
@@ -133,7 +153,8 @@
         </div>
       </div>
       <form class="form-floating w-100 align-items-center" id="chat-form">
-        <textarea type="text" class="form-control" id="customer-support-text-area" placeholder="Write your message"></textarea>
+        <textarea type="text" class="form-control" id="customer-support-text-area"
+          placeholder="Write your message"></textarea>
         <button id="send" type="submit" class="btn btn-primary">Send</button>
       </form>
     </div>

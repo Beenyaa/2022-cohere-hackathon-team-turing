@@ -10,11 +10,14 @@
     // create websocket
     var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer ");
     socket.onmessage = function (event) {
+
       var parent = $("#messages");
       var data = JSON.parse(event.data);
       var sender = data["sender"];
       if (sender === current_user) sender = "You";
       const message = data['message'];
+      if (message === undefined || message['type'] === 'multichoice')
+        return;
       var content =
         "<p><strong>" +
         sender +
