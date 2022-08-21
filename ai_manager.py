@@ -11,6 +11,11 @@ class AIManager:
 
         self.co = cohere.Client(API_KEY)
         self.create_products()
+        self.generate_kb()
+
+ 
+
+    def generate_kb(self):
         self.kb = pd.DataFrame({'question': []})
 
         for product in self.products:
@@ -27,12 +32,10 @@ class AIManager:
                 return_likelihoods='NONE')
             results = response.generations[0].text
             df = self.generate_df(results)
-            self.kb = pd.concat([self.kb, df], axis=0).reset_index(drop=True)
-        self.kb.sample(10)  
+            self.kb = pd.concat([self.kb, df], axis=0).reset_index(drop=True) 
 
     def answer_message(self, msg: str, n_top: int = 3) -> list[str]:
         return self.query_using_semantic_search(msg)
-
 
     def create_products(self):
         product = namedtuple('product', ['name', 'prompt'])
@@ -86,9 +89,33 @@ class AIManager:
         return pd.DataFrame({'question': df.loc[similar_item_ids[0], 'question'],
                             'distance': similar_item_ids[1]}) 
 
+    def generate_using_dialog(self, dialog):
+        """
+        dialog should be formatted as such: 
+        "Customer: Msg1\nAgent: Response1\n--\nCustomer: Msg2\nAgent: Response2\n--\nCustomer: Msg3"
+        """
+        response = self.co.generate(
+            model='xlarge',
+            prompt=f'You are a customer support agent responding to a customer.\n--\n{dialog}\nAgent: ',
+            max_tokens=15,
+            temperature=0.3,
+            k=0,
+            p=1,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stop_sequences=["--"],
+            return_likelihoods='NONE')
+
+        return  response.generations[0].text
+
+
+
 if __name__ == "__main__":
-    API_KEY = 'W7pUgfmt5TLcugvbrt0gPKSrxynr46ioysgIXMP2'
+    API_KEY = 'xxxxxxxxxxxxxxxxxx'
     aiManager = AIManager(API_KEY)
     msg = 'What is the height at the back in cm for the Halls Standard Cold Frame'
     response = aiManager.answer_message(msg)
+    print(response)
+    dialog = "Customer: Hello\nAgent: What can I help you with today?\n--\nCustomer: How is work?"
+    response = aiManager.generate_using_dialog(dialog)
     print(response)
