@@ -9,6 +9,8 @@ from fastapi.staticfiles import StaticFiles
 
 from pathlib import Path
 
+from .ai_manager import AIManager
+
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
@@ -18,6 +20,8 @@ app.mount(
 
 # locate templates
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
+
+ai_manager = AIManager('Yz9DQdFfc8L8K0SHUhoMWiurN5R2tkzbGXMLMwRv')
 
 
 @app.get("/")
@@ -69,16 +73,15 @@ templates.env.globals.update(postMessage=postMessage)
 
 
 async def handleCustomerSupport(data):
-    print(data)
     await manager.broadcast(data)
 
 
 async def handleCustomer(data):
-    values = ['hellow', 'abc', 'korea']
-    msg = {'type': 'multichoice', 'sender': 'Customer Support', 'messages': values}
+    await manager.broadcast(data)
+    data = ai_manager.answer_message(data['message'])
+    print(data)
+
     
-    print(msg)
-    await manager.broadcast(msg)
 
 
 async def handleCustomerSupportBot(data):

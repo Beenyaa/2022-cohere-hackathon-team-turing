@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from ai_manager import AIManager
+from ChatApp.ai_manager import AIManager
 import asyncio
 import websockets
 import json

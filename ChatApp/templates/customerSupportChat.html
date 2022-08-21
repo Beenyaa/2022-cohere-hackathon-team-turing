@@ -21,7 +21,16 @@
     }
 
     function sendAnswer(index) {
+      const value = answerText[index];
+      const textValue = document.getElementById(value).textContent;
 
+      data = {
+        sender: "Customer Support",
+        message: textValue,
+      };
+
+      socket.send(JSON.stringify(data));
+      document.getElementById('multichoice-panel').classList.add('visually-hidden');
     }
 
     document.getElementById("edit-button-0").addEventListener('click', event => {
@@ -49,12 +58,11 @@
 
     var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer Support");
     socket.onmessage = function (event) {
-
-
       var parent = $("#messages");
       var data = JSON.parse(event.data);
       var sender = data["sender"];
       if (sender === current_user) sender = "You";
+      console.log(data);
       var content =
         "<p><strong>" +
         sender +

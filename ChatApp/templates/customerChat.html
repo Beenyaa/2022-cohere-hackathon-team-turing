@@ -31,6 +31,7 @@
           sender: current_user,
           message: message,
         };
+        console.log(data);
         socket.send(JSON.stringify(data));
         $("textarea").val("");
       }

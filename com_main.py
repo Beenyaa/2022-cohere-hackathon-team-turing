@@ -1,5 +1,5 @@
 import asyncio
-from ai_manager import AIManager
+from ChatApp.ai_manager import AIManager
 from customer_support import CustomerSupportChat
 
 
