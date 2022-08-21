@@ -1,56 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  {% include 'components/head.html' %}
-  <script>
-    $(document).ready(function () {
-      var current_user = 'Customer'
-      var receiver = "";
-      // create websocket
-      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer ");
-      socket.onmessage = function (event) {
-        var parent = $("#messages");
-        var data = JSON.parse(event.data);
-        var sender = data["sender"];
-        if (sender === current_user) sender = "You";
-        var message = data["message"];
-        var content =
-          "<p><strong>" +
-          sender +
-          ": </strong> <span> " +
-          message +
-          "</span></p>";
-        parent.append(content);
-      };
-      $("#chat-form").on("submit", function (e) {
-        e.preventDefault();
-        var message = $("textarea").val();
-        if (message) {
-          data = {
-            sender: current_user,
-            message: message,
-          };
-          socket.send(JSON.stringify(data));
-          $("textarea").val("");
-        }
-      });
+{% include 'components/head.html' %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+<script>
+  $(document).ready(function () {
+    var current_user = 'Customer'
+    var receiver = "";
+    // create websocket
+    var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer ");
+    socket.onmessage = function (event) {
+      var parent = $("#messages");
+      var data = JSON.parse(event.data);
+      var sender = data["sender"];
+      if (sender === current_user) sender = "You";
+      let message = undefined;
+      if (data['type'] === 'multichoice') {
+        console.log("ABC");
+
+        message = `
+        <div>
+          <div style='background-color: #FFD; margin-bottom: 5px'>
+            <button>Send</button>
+            <button>Edit</button>
+            ${data["messages"][0]}
+          </div>
+          <div style='background-color: #FFD; margin-bottom: 5px'>
+            <button><span class="material-symbols-outlined" class="send-buttons">send</span></button>
+            <button><span class="material-symbols-outlined" class="send-buttons">edit</span></button>
+            ${data["messages"][1]}
+          </div>
+          <div style='background-color: #FFD; margin-bottom: 5px'>
+            <button>Send</button>
+            <button>Edit</button>
+            ${data["messages"][2]}
+          </div>
+        </div>
+        `
+      }
+      else {
+        console.log("CHA");
+        message = data["message"];
+      }
+      var content =
+        "<p><strong>" +
+        sender +
+        ": </strong> <span> " +
+        message +
+        "</span></p>";
+      parent.append(content);
+    };
+    $("#chat-form").on("submit", function (e) {
+      e.preventDefault();
+      var message = $("textarea").val();
+      if (message) {
+        data = {
+          sender: current_user,
+          message: message,
+        };
+        socket.send(JSON.stringify(data));
+        $("textarea").val("");
+      }
     });
-  </script>
-  <body>
-    <div class="chat-body card">
-      <div class="card-body h-100">
-        <strong id="profile"></strong>
-        <h4 class="card-title text-center">Customer's Chat View</h4>
-        <hr />
-        <div id="messages"></div>
-        <form class="form-floating w-100 align-items-center" id="chat-form">
-          <textarea
-            type="text"
-            class="form-control"
-            placeholder="Write your message"
-          ></textarea>
-          <button id="send" type="submit" class="btn btn-primary">Send</button>
-        </form>
-      </div>
+  });
+</script>
+
+<body>
+  <div class="chat-body card">
+    <div class="card-body h-100">
+      <strong id="profile"></strong>
+      <h4 class="card-title text-center">Customer's Chat View</h4>
+      <hr />
+      <div id="messages"></div>
+      <form class="form-floating w-100 align-items-center" id="chat-form">
+        <textarea type="text" class="form-control" placeholder="Write your message"></textarea>
+        <button id="send" type="submit" class="btn btn-primary">Send</button>
+      </form>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

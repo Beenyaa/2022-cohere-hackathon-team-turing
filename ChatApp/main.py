@@ -19,6 +19,7 @@ app.mount(
 # locate templates
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
 
+
 @app.get("/")
 def get_home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
@@ -59,17 +60,25 @@ class SocketManager:
 
 manager = SocketManager()
 
+
 def postMessage(msg):
     ...
 
+
 templates.env.globals.update(postMessage=postMessage)
 
+
 async def handleCustomerSupport(data):
+    print(data)
     await manager.broadcast(data)
 
 
 async def handleCustomer(data):
-    await manager.broadcast(data)
+    values = ['hellow', 'abc', 'korea']
+    msg = {'type': 'multichoice', 'sender': 'Customer Support', 'messages': values}
+    
+    print(msg)
+    await manager.broadcast(msg)
 
 
 async def handleCustomerSupportBot(data):
