@@ -20,6 +20,8 @@ uvicorn = "*"
 watchgod = "*"
 websockets = "*"
 certifi = "*"
+pandas = "*"
+annoy = "*"
 
 [dev-packages]
 autopep8 = "*"
