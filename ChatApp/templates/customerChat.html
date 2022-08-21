@@ -14,34 +14,7 @@
       var data = JSON.parse(event.data);
       var sender = data["sender"];
       if (sender === current_user) sender = "You";
-      let message = undefined;
-      if (data['type'] === 'multichoice') {
-        console.log("ABC");
-
-        message = `
-        <div>
-          <div style='background-color: #FFD; margin-bottom: 5px'>
-            <button>Send</button>
-            <button>Edit</button>
-            ${data["messages"][0]}
-          </div>
-          <div style='background-color: #FFD; margin-bottom: 5px'>
-            <button><span class="material-symbols-outlined" class="send-buttons">send</span></button>
-            <button><span class="material-symbols-outlined" class="send-buttons">edit</span></button>
-            ${data["messages"][1]}
-          </div>
-          <div style='background-color: #FFD; margin-bottom: 5px'>
-            <button>Send</button>
-            <button>Edit</button>
-            ${data["messages"][2]}
-          </div>
-        </div>
-        `
-      }
-      else {
-        console.log("CHA");
-        message = data["message"];
-      }
+      const message = data['message'];
       var content =
         "<p><strong>" +
         sender +

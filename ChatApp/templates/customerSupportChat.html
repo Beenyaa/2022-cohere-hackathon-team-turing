@@ -1,56 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-  {% include 'components/head.html' %}
-  <script>
-    $(document).ready(function () {
-      var current_user = 'Customer Support';
-      var receiver = "";
-      // create websocket
-      var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer Support");
-      socket.onmessage = function (event) {
-        var parent = $("#messages");
-        var data = JSON.parse(event.data);
-        var sender = data["sender"];
-        if (sender === current_user) sender = "You";
-        var message = data["message"];
-        var content =
-          "<p><strong>" +
-          sender +
-          ": </strong> <span> " +
-          message +
-          "</span></p>";
-        parent.append(content);
-      };
-      $("#chat-form").on("submit", function (e) {
-        e.preventDefault();
-        var message = $("textarea").val();
-        if (message) {
-          data = {
-            sender: current_user,
-            message: message,
-          };
-          socket.send(JSON.stringify(data));
-          $("textarea").val("");
-        }
-      });
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+{% include 'components/head.html' %}
+<script>
+  $(document).ready(function () {
+    const answerText = [
+      'answer-text-0',
+      'answer-text-1',
+      'answer-text-2'
+    ];
+
+    function editAnswer(index) {
+      const value = answerText[index];
+      const textValue = document.getElementById(value).textContent;
+      const textArea = document.getElementById('customer-support-text-area');
+      textArea.value = textValue;
+      document.getElementById('multichoice-panel').classList.add('visually-hidden');
+      console.log(textValue);
+    }
+
+    function sendAnswer(index) {
+
+    }
+
+    document.getElementById("edit-button-0").addEventListener('click', event => {
+      editAnswer(0);
     });
-  </script>
-  <body>
-    <div class="chat-body card">
-      <div class="card-body h-100">
-        <strong id="profile"></strong>
-        <h4 class="card-title text-center">Customer Support's Chat View</h4>
-        <hr />
-        <div id="messages"></div>
-        <form class="form-floating w-100 align-items-center" id="chat-form">
-          <textarea
-            type="text"
-            class="form-control"
-            placeholder="Write your message"
-          ></textarea>
-          <button id="send" type="submit" class="btn btn-primary">Send</button>
-        </form>
+    document.getElementById("edit-button-1").addEventListener('click', event => {
+      editAnswer(1);
+    });
+    document.getElementById("edit-button-2").addEventListener('click', event => {
+      editAnswer(2);
+    });
+    document.getElementById("send-button-0").addEventListener('click', event => {
+      sendAnswer(0);
+    });
+    document.getElementById("send-button-1").addEventListener('click', event => {
+      sendAnswer(1);
+    });
+    document.getElementById("send-button-2").addEventListener('click', event => {
+      sendAnswer(2);
+    });
+
+    var current_user = 'Customer Support';
+    var receiver = "";
+    // create websocket
+
+    var socket = new WebSocket("ws://127.0.0.1:8000/api/chat/Customer Support");
+    socket.onmessage = function (event) {
+
+
+      var parent = $("#messages");
+      var data = JSON.parse(event.data);
+      var sender = data["sender"];
+      if (sender === current_user) sender = "You";
+      var content =
+        "<p><strong>" +
+        sender +
+        ": </strong> <span> " +
+        data['message'] +
+        "</span></p>";
+      parent.append(content);
+
+      let message = undefined;
+      if (data['type'] === 'multichoice') {
+        const panel = document.getElementById('multichoice-panel');
+        panel.classList.remove('visually-hidden');
+      }
+      else {
+        message = data["message"];
+      }
+
+    };
+    $("#chat-form").on("submit", function (e) {
+      e.preventDefault();
+      var message = $("textarea").val();
+      if (message) {
+        data = {
+          sender: current_user,
+          message: message,
+        };
+        socket.send(JSON.stringify(data));
+        $("textarea").val("");
+      }
+    });
+  });
+</script>
+
+<body>
+  <div class="chat-body card">
+    <div class="card-body h-100">
+      <strong id="profile"></strong>
+      <h4 class="card-title text-center">Customer Support's Chat View</h4>
+      <hr />
+      <div id="messages"></div>
+      <div id="multichoice-panel" class="visually-hidden">
+        <div style='background-color: #FFD; margin-bottom: 5px'>
+          <button id="edit-button-0"">
+            <span class="material-symbols-outlined" class="send-buttons">edit</span>
+          </button>
+          <button id="send-button-0">
+            <span class="material-symbols-outlined" class="send-buttons">send</span>
+          </button>
+          <span id="answer-text-0">ABC</span>
+        </div>
+        <div style='background-color: #FFD; margin-bottom: 5px'>
+          <button id="edit-button-1">
+            <span class="material-symbols-outlined" class="send-buttons">edit</span>
+          </button>
+          <button id="send-button-1">
+            <span class="material-symbols-outlined" class="send-buttons">send</span>
+          </button>
+          <span id="answer-text-1">ABC</span>
+        </div>
+        <div style='background-color: #FFD; margin-bottom: 5px'>
+          <button id="edit-button-2">
+            <span class="material-symbols-outlined" class="send-buttons">edit</span>
+          </button>
+          <button id="send-button-2">
+            <span class="material-symbols-outlined" class="send-buttons">send</span>
+          </button>
+          <span id="answer-text-2">ABC</span>
+        </div>
       </div>
+      <form class="form-floating w-100 align-items-center" id="chat-form">
+        <textarea type="text" class="form-control" id="customer-support-text-area" placeholder="Write your message"></textarea>
+        <button id="send" type="submit" class="btn btn-primary">Send</button>
+      </form>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
