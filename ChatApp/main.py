@@ -22,7 +22,7 @@ app.mount(
 # locate templates
 templates = Jinja2Templates(directory=str(Path(BASE_DIR, 'templates')))
 
-ai_manager = AIManager('Yz9DQdFfc8L8K0SHUhoMWiurN5R2tkzbGXMLMwRv')
+ai_manager = AIManager('')  # add API key in the quotation marks
 
 
 @app.get("/")
