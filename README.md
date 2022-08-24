@@ -16,5 +16,6 @@
  
 ## Example prompts as customer
  - Hey can you help me with my cold frame I purchased from you guys?
- - What is the height at the back in cm for the Standard Cold Frame?
- - What is the height at the back in cm for the Standard Cold Frame with Toughened Glass?
+ - What is the height at the back in cm for the Halls Standard Cold Frame?
+ - What is the height at the back in cm for the Halls Standard Cold Frame with Toughened Glass?
+ - My Halls Standard Cold Frame size is off, what are the measurements supposed to be?
